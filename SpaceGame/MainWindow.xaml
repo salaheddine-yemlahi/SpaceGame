@@ -7,8 +7,22 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Canvas Name="GameCanvas" Background="Black">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
 
+        <Canvas Name="GameCanvas" Background="Black" Grid.Column="0">
         </Canvas>
+
+        <Grid Grid.Column="1" Background="Black">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Enemy killed" FontSize="24" Foreground="Green" Margin="10" Grid.Row="0"/>
+            <TextBlock x:Name="scoreEnemiesKilled" Text="0" FontSize="24" Foreground="Green" Margin="10" Grid.Row="1" TextAlignment="Center"/>
+        </Grid>
     </Grid>
 </Window>

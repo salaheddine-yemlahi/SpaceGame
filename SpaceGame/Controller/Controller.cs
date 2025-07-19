@@ -84,7 +84,7 @@ namespace SpaceGame.Controller
             return enemy;
         }
 
-        public async void CheckBulletEnemy(Canvas GameCanvas)
+        public async void CheckBulletEnemy(Canvas GameCanvas, TextBlock textBlock)
         {
             while (true)
             {
@@ -124,6 +124,9 @@ namespace SpaceGame.Controller
                                 bulletsToRemove.Add(bullet);
                             if (!enemiesToRemove.Contains(enemy))
                                 enemiesToRemove.Add(enemy);
+
+                            Player.IncrementScore();
+                            textBlock.Text = $"{Player.ScoreEnemiesKilled}";
                         }
                     }
                 }
@@ -144,6 +147,10 @@ namespace SpaceGame.Controller
                 }
                 await Task.Delay(50);
             }
+        }
+        public int GetScore()
+        {
+            return Player.ScoreEnemiesKilled;
         }
     }
 }

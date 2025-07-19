@@ -14,6 +14,7 @@ namespace SpaceGame.Classes
     public class Player
     {
         public Image Sprite { get; private set; }
+        public int ScoreEnemiesKilled { get; set; } = 0; // Compteur de score pour les ennemis tués
 
         public Player(String imagePath, double x, double y)
         {
@@ -35,6 +36,10 @@ namespace SpaceGame.Classes
              * X augmente vers la droite  
              * Y augmente vers le bas  
             */
+        }
+        public void IncrementScore()
+        {
+            ScoreEnemiesKilled++;
         }
         public void Move(double dx, double dy, double maxWidth, double maxHeight)
         {
