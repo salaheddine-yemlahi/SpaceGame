@@ -29,6 +29,7 @@ namespace SpaceGame
                 player = controller.Player;
                 GameCanvas.Children.Add(player.Sprite);
                 CreateEnemy();
+                controller.CheckBulletEnemy(GameCanvas);
             };
             this.KeyDown += MainWindow_KeyDown;
             
@@ -45,7 +46,7 @@ namespace SpaceGame
                 {
                     GameCanvas.Children.Add(enemy.Sprite);
                 }
-                await Task.Delay(1000);
+                await Task.Delay(4000);
             }
         }
 
@@ -75,6 +76,5 @@ namespace SpaceGame
                 controller.MovePlayer(0, 10, GameCanvas.ActualWidth, GameCanvas.ActualHeight);
             }
         }
-
     }
 }
