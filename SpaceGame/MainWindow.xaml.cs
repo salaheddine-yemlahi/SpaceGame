@@ -13,10 +13,8 @@ namespace SpaceGame
     {
         Player player;
         Controller.Controller controller;
-        Bullet bullet;
         double width;
         double height;
-       
 
         public MainWindow()
         {
@@ -25,14 +23,21 @@ namespace SpaceGame
             {
                 width = GameCanvas.ActualWidth;
                 height = GameCanvas.ActualHeight;
-                controller = new Controller.Controller(@"C:\Users\salah\Desktop\SpaceGame\asserts\player.png", width, height);
-                player = controller.Player;
+
+                // Créer le player (modèle)
+                player = new Player(@"C:\Users\salah\Desktop\SpaceGame\asserts\player.png", width, height);
+
+                // Créer le controller en lui passant le player et la vue
+                controller = new Controller.Controller(player, this);
+
+                // Ajouter le player au canvas
                 GameCanvas.Children.Add(player.Sprite);
+
+                // Démarrer le jeu
                 CreateEnemy();
-                controller.CheckBulletEnemy(GameCanvas, scoreEnemiesKilled);
+                controller.StartCollisionDetection();
             };
             this.KeyDown += MainWindow_KeyDown;
-            
         }
 
         public async void CreateEnemy()
@@ -41,11 +46,7 @@ namespace SpaceGame
             while (true)
             {
                 double enemyX = random.Next(50, (int)(width - 50));
-                Enemy enemy = controller.CreateEnemy(@"C:\Users\salah\Desktop\SpaceGame\asserts\E1.png", enemyX);
-                if(enemy != null)
-                {
-                    GameCanvas.Children.Add(enemy.Sprite);
-                }
+                controller.CreateEnemy(@"C:\Users\salah\Desktop\SpaceGame\asserts\E1.png", enemyX);
                 await Task.Delay(4000);
             }
         }
@@ -54,28 +55,24 @@ namespace SpaceGame
         {
             if (e.Key == Key.Space)
             {
-                bullet = controller.CreateBullet(Canvas.GetLeft(player.Sprite), Canvas.GetTop(player.Sprite));
-                GameCanvas.Children.Add(bullet.Shape);
-                controller.UpdateBulletPosition(bullet, GameCanvas);
+                controller.CreateBullet();
             }
             if (e.Key == Key.Left)
             {
-                controller.MovePlayer(-10, 0, GameCanvas.ActualWidth, GameCanvas.ActualHeight);
-                
+                controller.MovePlayer(-10, 0);
             }
             else if (e.Key == Key.Right)
             {
-                controller.MovePlayer(10, 0, GameCanvas.ActualWidth, GameCanvas.ActualHeight);
+                controller.MovePlayer(10, 0);
             }
             else if (e.Key == Key.Up)
             {
-                controller.MovePlayer(0, -10, GameCanvas.ActualWidth, GameCanvas.ActualHeight);
+                controller.MovePlayer(0, -10);
             }
             else if (e.Key == Key.Down)
             {
-                controller.MovePlayer(0, 10, GameCanvas.ActualWidth, GameCanvas.ActualHeight);
+                controller.MovePlayer(0, 10);
             }
         }
-        
     }
 }

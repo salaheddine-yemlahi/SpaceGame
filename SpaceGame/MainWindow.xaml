@@ -8,8 +8,8 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="8*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="7.5*"/>
+            <ColumnDefinition Width="2.5*"/>
         </Grid.ColumnDefinitions>
 
         <Canvas Name="GameCanvas" Background="Black" Grid.Column="0">
@@ -21,7 +21,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="Enemy killed" FontSize="24" Foreground="Green" Margin="10" Grid.Row="0"/>
+            <TextBlock Text="Enemies killed" FontSize="24" Foreground="Green" Margin="10" Grid.Row="0" TextAlignment="Center"/>
             <TextBlock x:Name="scoreEnemiesKilled" Text="0" FontSize="24" Foreground="Green" Margin="10" Grid.Row="1" TextAlignment="Center"/>
         </Grid>
     </Grid>
