@@ -8,45 +8,73 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using SpaceGame;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace SpaceGame.Classes
 {
-    public class Player
+    // Classe mère commune avec barre de vie
+    public abstract class GameObject
     {
-        public Image Sprite { get; private set; }
-        public int ScoreEnemiesKilled { get; set; } = 0; // Compteur de score pour les ennemis tués
+        public Image Sprite { get; protected set; }
+        public Rectangle HealthBar { get; protected set; }
 
-        public Player(String imagePath, double x, double y)
+        protected GameObject(string imagePath, double x, double y, double width = 100, double height = 80)
         {
+            // Créer le sprite principal
             Sprite = new Image
             {
-                Width = 100, // 100 pixels de largeur  
-                Height = 80, // 80 pixels de longeur  
+                Width = width,
+                Height = height,
                 Source = new BitmapImage(new Uri(imagePath, UriKind.Absolute))
-                /*  
-                 * BitmapImage - classe WPF pour afficher des images dans l'interface utilisateur  
-                 * Uri - crée une URI absolue depuis le chemin d'image  
-                */
             };
-            // Positionnement en BAS AU MILIEU du Canvas  
-            Canvas.SetLeft(Sprite, (x - Sprite.Width) / 2);
-            Canvas.SetTop(Sprite, y - Sprite.Height);
-            /*  
-             * (0,0) = coin supérieur gauche du Canvas  
-             * X augmente vers la droite  
-             * Y augmente vers le bas  
-            */
+
+            // Créer la barre de vie
+            HealthBar = new Rectangle
+            {
+                Width = width,
+                Height = 8, // Hauteur de la barre de vie
+                Fill = Brushes.Green,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1
+            };
+
+            // Positionner les éléments
+            Canvas.SetLeft(Sprite, x);
+            Canvas.SetTop(Sprite, y);
         }
+
+        public virtual void Clear()
+        {
+            Sprite = null;
+            HealthBar = null;
+        }
+    }
+
+    // Classe Player héritant de GameObject
+    public class Player : GameObject
+    {
+        public int ScoreEnemiesKilled { get; set; } = 0;
+
+        public Player(string imagePath, double x, double y)
+            : base(imagePath, (x - 100) / 2, y - 80)
+        {
+            double left = Canvas.GetLeft(Sprite);
+            double top = Canvas.GetTop(Sprite);
+            Canvas.SetLeft(HealthBar, left);
+            Canvas.SetTop(HealthBar, top + Sprite.Height + 2); // 2px d'espacement
+                                                             // Positionner la barre de vie sous le sprite
+
+        }
+
         public void IncrementScore()
         {
             ScoreEnemiesKilled++;
         }
+
         public void Move(double dx, double dy, double maxWidth, double maxHeight)
         {
-            double left = Canvas.GetLeft(Sprite); // récupère la position horizontale actuelle du sprite  
-            double top = Canvas.GetTop(Sprite); // récupère la position verticale actuelle du sprite  
-
-
+            double left = Canvas.GetLeft(Sprite);
+            double top = Canvas.GetTop(Sprite);
             double newLeft = left + dx;
             double newTop = top + dy;
 
@@ -58,30 +86,29 @@ namespace SpaceGame.Classes
             if (newTop < 0) newTop = 0;
             if (newTop + Sprite.Height > maxHeight) newTop = maxHeight - Sprite.Height;
 
-            // Appliquer les nouvelles positions
+            // Appliquer les nouvelles positions au sprite
             Canvas.SetLeft(Sprite, newLeft);
             Canvas.SetTop(Sprite, newTop);
+
+            // Déplacer aussi la barre de vie
+            Canvas.SetLeft(HealthBar, newLeft);
+            Canvas.SetTop(HealthBar, newTop + Sprite.Height + 2);
         }
     }
 
-    public class Enemy
+    // Classe Enemy héritant de GameObject
+    public class Enemy : GameObject
     {
-        public Image Sprite { get; private set; }
-
-        public Enemy(String imagePath, double x)
+        public Enemy(string imagePath, double x)
+            : base(imagePath, x, 0)
         {
-            Sprite = new Image
-            {
-                Width = 100, // 100 pixels de largeur  
-                Height = 80, // 80 pixels de longeur  
-                Source = new BitmapImage(new Uri(imagePath, UriKind.Absolute))
-            };
-            Canvas.SetLeft(Sprite, x);
-            Canvas.SetTop(Sprite, 0);
+            Canvas.SetLeft(HealthBar, x);
+            Canvas.SetTop(HealthBar, -10); // 2px d'espacement
         }
+
         public void ClearEnemy()
         {
-            Sprite = null;
+            Clear();
         }
     }
 

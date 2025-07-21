@@ -22,7 +22,7 @@ namespace SpaceGame
             GameCanvas.Loaded += (sender, e) =>
             {
                 width = GameCanvas.ActualWidth;
-                height = GameCanvas.ActualHeight;
+                height = GameCanvas.ActualHeight - 25;
 
                 // Créer le player (modèle)
                 player = new Player(@"C:\Users\salah\Desktop\SpaceGame\asserts\player.png", width, height);
@@ -32,6 +32,7 @@ namespace SpaceGame
 
                 // Ajouter le player au canvas
                 GameCanvas.Children.Add(player.Sprite);
+                GameCanvas.Children.Add(player.HealthBar);
 
                 // Démarrer le jeu
                 CreateEnemy();

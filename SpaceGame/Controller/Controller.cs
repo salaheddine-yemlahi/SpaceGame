@@ -30,7 +30,7 @@ namespace SpaceGame.Controller
 
         public void MovePlayer(double dx, double dy)
         {
-            player.Move(dx, dy, view.GameCanvas.ActualWidth, view.GameCanvas.ActualHeight);
+            player.Move(dx, dy, view.GameCanvas.ActualWidth, view.GameCanvas.ActualHeight-15);
         }
 
         public Bullet CreateBullet()
@@ -87,6 +87,7 @@ namespace SpaceGame.Controller
             {
                 Enemy enemy = new Enemy(imagePath, x);
                 enemies.Add(enemy);
+                view.GameCanvas.Children.Add(enemy.HealthBar);
                 view.GameCanvas.Children.Add(enemy.Sprite);
                 MoveEnemyDown(enemy);
                 return enemy;
@@ -101,17 +102,22 @@ namespace SpaceGame.Controller
             {
                 if (enemy.Sprite == null) break;
 
-                double currentTop = Canvas.GetTop(enemy.Sprite);
-                double newTop = currentTop + 2;
+                double enemyCurrentTop = Canvas.GetTop(enemy.Sprite);
+                double enemyNewTop = enemyCurrentTop + 2;
+                double healthBarCurrentTop = Canvas.GetTop(enemy.HealthBar);
+                double healthBarNewTop = healthBarCurrentTop + 2;
 
-                Canvas.SetTop(enemy.Sprite, newTop);
+
+                Canvas.SetTop(enemy.Sprite, enemyNewTop);
+                Canvas.SetTop(enemy.HealthBar, healthBarNewTop);
 
                 // Si l'ennemi sort de l'écran par le bas, le supprimer
-                if (newTop > view.GameCanvas.ActualHeight)
+                if (enemyNewTop > view.GameCanvas.ActualHeight)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         view.GameCanvas.Children.Remove(enemy.Sprite);
+                        view.GameCanvas.Children.Remove(enemy.HealthBar);
                         enemies.Remove(enemy);
                         enemy.ClearEnemy();
                     });
@@ -185,6 +191,7 @@ namespace SpaceGame.Controller
                     {
                         enemies.Remove(enemy);
                         view.GameCanvas.Children.Remove(enemy.Sprite);
+                        view.GameCanvas.Children.Remove(enemy.HealthBar);
                         enemy.ClearEnemy();
                     }
                 });

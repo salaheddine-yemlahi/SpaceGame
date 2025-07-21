@@ -15,7 +15,7 @@
         <Canvas Name="GameCanvas" Background="Black" Grid.Column="0">
         </Canvas>
 
-        <Grid Grid.Column="1" Background="Black">
+        <Grid Grid.Column="1" Background="Black" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
