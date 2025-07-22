@@ -9,18 +9,47 @@ using System.Windows.Shapes;
 using SpaceGame;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Security.Policy;
 
 namespace SpaceGame.Classes
 {
-    // Classe mère commune avec barre de vie
+    public class HealthBar
+    {
+        public Rectangle Bar { get; private set; }
+        public Brush Color { get; set; } = Brushes.Green;
+        public HealthBar(double x, double y, double width = 100, double height = 10)
+        {
+            Bar = new Rectangle
+            {
+                Width = width,
+                Height = height,
+                Fill = Color,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1
+            };
+            Canvas.SetLeft(Bar, x);
+            Canvas.SetTop(Bar, y);
+        }
+        public void UpdateHealthBarre(double newLeft, double newTop, double height)
+        {
+            Canvas.SetLeft(Bar, newLeft);
+            Canvas.SetTop(Bar, newTop + height + 2);
+        }
+        public virtual void Clear()
+        {
+            Bar = null;
+        }
+    }
+
     public abstract class GameObject
     {
         public Image Sprite { get; protected set; }
-        public Rectangle HealthBar { get; protected set; }
+        public HealthBar healthBar { get; protected set; }
+        const int MaxHealth = 100; // CORRECTION: Constante pour la santé maximale
+        public int health { get; set; } = MaxHealth;
 
         protected GameObject(string imagePath, double x, double y, double width = 100, double height = 80)
         {
-            // Créer le sprite principal
             Sprite = new Image
             {
                 Width = width,
@@ -28,42 +57,48 @@ namespace SpaceGame.Classes
                 Source = new BitmapImage(new Uri(imagePath, UriKind.Absolute))
             };
 
-            // Créer la barre de vie
-            HealthBar = new Rectangle
-            {
-                Width = width,
-                Height = 8, // Hauteur de la barre de vie
-                Fill = Brushes.Green,
-                Stroke = Brushes.Black,
-                StrokeThickness = 1
-            };
-
-            // Positionner les éléments
+            // CORRECTION: Positionner le sprite d'abord
             Canvas.SetLeft(Sprite, x);
             Canvas.SetTop(Sprite, y);
+
+            // CORRECTION: Créer la barre de vie à la bonne position
+            healthBar = new HealthBar(x, y + height + 2, width, 10);
         }
 
         public virtual void Clear()
         {
             Sprite = null;
-            HealthBar = null;
+            healthBar?.Clear();
+            healthBar = null;
+        }
+
+        public void UpdateHealthBar()
+        {
+            health -= MaxHealth / 4;
+            healthBar.Bar.Width = health;
+            switch (health)
+            {
+                case var h when h > 75:
+                    healthBar.Bar.Fill = Brushes.Green;
+                    break;
+                case var h when h > 25:
+                    healthBar.Bar.Fill = Brushes.Yellow;
+                    break;
+                case var h when h > 0 :
+                    healthBar.Bar.Fill = Brushes.Red;
+                    break;
+            }
         }
     }
 
-    // Classe Player héritant de GameObject
     public class Player : GameObject
     {
         public int ScoreEnemiesKilled { get; set; } = 0;
 
-        public Player(string imagePath, double x, double y)
-            : base(imagePath, (x - 100) / 2, y - 80)
+        // CORRECTION: Paramètres plus clairs
+        public Player(string imagePath, double canvasWidth, double canvasHeight)
+            : base(imagePath, (canvasWidth - 100) / 2, canvasHeight - 100) // CORRECTION: Centré en bas
         {
-            double left = Canvas.GetLeft(Sprite);
-            double top = Canvas.GetTop(Sprite);
-            Canvas.SetLeft(HealthBar, left);
-            Canvas.SetTop(HealthBar, top + Sprite.Height + 2); // 2px d'espacement
-                                                             // Positionner la barre de vie sous le sprite
-
         }
 
         public void IncrementScore()
@@ -86,24 +121,18 @@ namespace SpaceGame.Classes
             if (newTop < 0) newTop = 0;
             if (newTop + Sprite.Height > maxHeight) newTop = maxHeight - Sprite.Height;
 
-            // Appliquer les nouvelles positions au sprite
             Canvas.SetLeft(Sprite, newLeft);
             Canvas.SetTop(Sprite, newTop);
 
-            // Déplacer aussi la barre de vie
-            Canvas.SetLeft(HealthBar, newLeft);
-            Canvas.SetTop(HealthBar, newTop + Sprite.Height + 2);
+            healthBar.UpdateHealthBarre(newLeft, newTop, Sprite.Height);
         }
     }
 
-    // Classe Enemy héritant de GameObject
     public class Enemy : GameObject
     {
         public Enemy(string imagePath, double x)
             : base(imagePath, x, 0)
         {
-            Canvas.SetLeft(HealthBar, x);
-            Canvas.SetTop(HealthBar, -10); // 2px d'espacement
         }
 
         public void ClearEnemy()
@@ -121,24 +150,26 @@ namespace SpaceGame.Classes
         {
             Shape = new Ellipse
             {
-                Width = 4, // 10 pixels de largeur  
-                Height = 25, // 10 pixels de hauteur  
-                Fill = Brushes.LightYellow // Couleur rouge pour la balle
+                Width = 4,
+                Height = 25,
+                Fill = Brushes.LightYellow
             };
-            Canvas.SetLeft(Shape, x+47); // Centrer la balle sur le joueur
-            Canvas.SetTop(Shape, y-20); // Centrer la balle sur le joueur
-            Speed = 10; // Vitesse de la balle
+            Canvas.SetLeft(Shape, x + 47); // CORRECTION: Centrer sur le joueur
+            Canvas.SetTop(Shape, y - 20);
+            Speed = 10;
         }
+
         public bool MoveUp()
         {
             double newTop = Canvas.GetTop(Shape) - Speed;
             if (newTop >= 0)
             {
                 Canvas.SetTop(Shape, newTop);
-                return true; // Encore visible
+                return true;
             }
-            return false; // Hors écran
+            return false;
         }
+
         public void ClearShape()
         {
             Shape = null;

@@ -24,17 +24,14 @@ namespace SpaceGame
                 width = GameCanvas.ActualWidth;
                 height = GameCanvas.ActualHeight - 25;
 
-                // Créer le player (modèle)
+                // CORRECTION: Passer width et height au constructeur Player
                 player = new Player(@"C:\Users\salah\Desktop\SpaceGame\asserts\player.png", width, height);
-
-                // Créer le controller en lui passant le player et la vue
                 controller = new Controller.Controller(player, this);
 
-                // Ajouter le player au canvas
+                // CORRECTION: Ajouter dans le bon ordre
                 GameCanvas.Children.Add(player.Sprite);
-                GameCanvas.Children.Add(player.HealthBar);
+                GameCanvas.Children.Add(player.healthBar.Bar);
 
-                // Démarrer le jeu
                 CreateEnemy();
                 controller.StartCollisionDetection();
             };
@@ -46,7 +43,7 @@ namespace SpaceGame
             Random random = new Random();
             while (true)
             {
-                double enemyX = random.Next(50, (int)(width - 50));
+                double enemyX = random.Next(50, (int)(width - 100));
                 controller.CreateEnemy(@"C:\Users\salah\Desktop\SpaceGame\asserts\E1.png", enemyX);
                 await Task.Delay(4000);
             }
@@ -54,26 +51,30 @@ namespace SpaceGame
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Space)
+            // CORRECTION: Utiliser switch pour plus de clarté
+            switch (e.Key)
             {
-                controller.CreateBullet();
+                case Key.Space:
+                    controller.CreateBullet();
+                    break;
+                case Key.Left:
+                    controller.MovePlayer(-10, 0);
+                    break;
+                case Key.Right:
+                    controller.MovePlayer(10, 0);
+                    break;
+                case Key.Up:
+                    controller.MovePlayer(0, -10);
+                    break;
+                case Key.Down:
+                    controller.MovePlayer(0, 10);
+                    break;
             }
-            if (e.Key == Key.Left)
-            {
-                controller.MovePlayer(-10, 0);
-            }
-            else if (e.Key == Key.Right)
-            {
-                controller.MovePlayer(10, 0);
-            }
-            else if (e.Key == Key.Up)
-            {
-                controller.MovePlayer(0, -10);
-            }
-            else if (e.Key == Key.Down)
-            {
-                controller.MovePlayer(0, 10);
-            }
+        }
+        public void RemoveElementFromCanvas(Player player)
+        {
+            GameCanvas.Children.Remove(player.Sprite);
+            GameCanvas.Children.Remove(player.healthBar.Bar);
         }
     }
 }

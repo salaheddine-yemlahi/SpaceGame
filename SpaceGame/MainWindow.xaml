@@ -14,15 +14,16 @@
 
         <Canvas Name="GameCanvas" Background="Black" Grid.Column="0">
         </Canvas>
-
-        <Grid Grid.Column="1" Background="Black" >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock Text="Enemies killed" FontSize="24" Foreground="Green" Margin="10" Grid.Row="0" TextAlignment="Center"/>
-            <TextBlock x:Name="scoreEnemiesKilled" Text="0" FontSize="24" Foreground="Green" Margin="10" Grid.Row="1" TextAlignment="Center"/>
-        </Grid>
+        <Border Grid.Column="1" Background="Black" BorderBrush="White" BorderThickness="1">
+            <Grid Grid.Column="1" Background="Black">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Enemies killed" FontSize="24" Foreground="Green" Margin="10" Grid.Row="0" TextAlignment="Center"/>
+                <TextBlock x:Name="scoreEnemiesKilled" Text="0" FontSize="24" Foreground="Green" Margin="10" Grid.Row="1" TextAlignment="Center"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

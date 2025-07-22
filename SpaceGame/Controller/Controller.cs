@@ -30,7 +30,7 @@ namespace SpaceGame.Controller
 
         public void MovePlayer(double dx, double dy)
         {
-            player.Move(dx, dy, view.GameCanvas.ActualWidth, view.GameCanvas.ActualHeight-15);
+            player.Move(dx, dy, view.GameCanvas.ActualWidth, view.GameCanvas.ActualHeight - 15);
         }
 
         public Bullet CreateBullet()
@@ -56,12 +56,17 @@ namespace SpaceGame.Controller
 
                 if (!stillVisible)
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
+                    if (Application.Current.Dispatcher.CheckAccess())
                     {
-                        view.GameCanvas.Children.Remove(bullet.Shape);
-                        bullets.Remove(bullet);
-                        bullet.ClearShape();
-                    });
+                        SafeRemoveBullet(bullet);
+                    }
+                    else
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            SafeRemoveBullet(bullet);
+                        });
+                    }
                     break;
                 }
 
@@ -87,8 +92,8 @@ namespace SpaceGame.Controller
             {
                 Enemy enemy = new Enemy(imagePath, x);
                 enemies.Add(enemy);
-                view.GameCanvas.Children.Add(enemy.HealthBar);
                 view.GameCanvas.Children.Add(enemy.Sprite);
+                view.GameCanvas.Children.Add(enemy.healthBar.Bar);
                 MoveEnemyDown(enemy);
                 return enemy;
             }
@@ -104,23 +109,25 @@ namespace SpaceGame.Controller
 
                 double enemyCurrentTop = Canvas.GetTop(enemy.Sprite);
                 double enemyNewTop = enemyCurrentTop + 2;
-                double healthBarCurrentTop = Canvas.GetTop(enemy.HealthBar);
+                double healthBarCurrentTop = Canvas.GetTop(enemy.healthBar.Bar);
                 double healthBarNewTop = healthBarCurrentTop + 2;
 
-
                 Canvas.SetTop(enemy.Sprite, enemyNewTop);
-                Canvas.SetTop(enemy.HealthBar, healthBarNewTop);
+                Canvas.SetTop(enemy.healthBar.Bar, healthBarNewTop);
 
-                // Si l'ennemi sort de l'écran par le bas, le supprimer
                 if (enemyNewTop > view.GameCanvas.ActualHeight)
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
+                    if (Application.Current.Dispatcher.CheckAccess())
                     {
-                        view.GameCanvas.Children.Remove(enemy.Sprite);
-                        view.GameCanvas.Children.Remove(enemy.HealthBar);
-                        enemies.Remove(enemy);
-                        enemy.ClearEnemy();
-                    });
+                        SafeRemoveEnemy(enemy);
+                    }
+                    else
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            SafeRemoveEnemy(enemy);
+                        });
+                    }
                     break;
                 }
 
@@ -142,21 +149,24 @@ namespace SpaceGame.Controller
                 var bulletsToRemove = new List<Bullet>();
                 var enemiesToRemove = new List<Enemy>();
 
-                foreach (Bullet bullet in bullets.ToList())
+                var currentBullets = bullets.ToList();
+                var currentEnemies = enemies.ToList();
+
+                foreach (Bullet bullet in currentBullets)
                 {
-                    if (bullet?.Shape == null) continue;
+                    if (bullet?.Shape == null || !bullets.Contains(bullet)) continue;
 
                     double bulletTop = Canvas.GetTop(bullet.Shape);
                     double bulletLeft = Canvas.GetLeft(bullet.Shape);
 
-                    foreach (Enemy enemy in enemies.ToList())
+                    foreach (Enemy enemy in currentEnemies)
                     {
-                        if (enemy?.Sprite == null) continue;
+                        if (enemy?.Sprite == null || !enemies.Contains(enemy)) continue;
 
                         double enemyTop = Canvas.GetTop(enemy.Sprite);
                         double enemyLeft = Canvas.GetLeft(enemy.Sprite);
 
-                        // Détection de collision
+                        // Collision balle-ennemi
                         if (bulletTop <= enemyTop + enemy.Sprite.Height &&
                             bulletTop + bullet.Shape.Height >= enemyTop &&
                             bulletLeft + bullet.Shape.Width >= enemyLeft &&
@@ -164,39 +174,167 @@ namespace SpaceGame.Controller
                         {
                             if (!bulletsToRemove.Contains(bullet))
                                 bulletsToRemove.Add(bullet);
-                            if (!enemiesToRemove.Contains(enemy))
-                                enemiesToRemove.Add(enemy);
-
-                            player.IncrementScore();
-
-                            Application.Current.Dispatcher.Invoke(() =>
+                            if (enemy.health > 25)
                             {
-                                view.scoreEnemiesKilled.Text = $"{player.ScoreEnemiesKilled}";
-                            });
+                                enemy.UpdateHealthBar();
+                                enemy.healthBar.UpdateHealthBarre(enemyLeft, enemyTop, enemy.Sprite.Height);
+                            }
+                            else
+                            {
+                                if (!enemiesToRemove.Contains(enemy))
+                                    enemiesToRemove.Add(enemy);
+
+                                player.IncrementScore();
+
+                                if (Application.Current.Dispatcher.CheckAccess())
+                                {
+                                    view.scoreEnemiesKilled.Text = $"{player.ScoreEnemiesKilled}";
+                                }
+                                else
+                                {
+                                    Application.Current.Dispatcher.Invoke(() =>
+                                    {
+                                        view.scoreEnemiesKilled.Text = $"{player.ScoreEnemiesKilled}";
+                                    });
+                                }
+                            }
                         }
                     }
                 }
 
-                // Supprimer les objets touchés
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    foreach (var bullet in bulletsToRemove)
-                    {
-                        bullets.Remove(bullet);
-                        view.GameCanvas.Children.Remove(bullet.Shape);
-                        bullet.ClearShape();
-                    }
+                // Vérifier collision joueur-ennemi (NOUVELLE FONCTION)
+                await CheckPlayerEnemyCollision(enemiesToRemove);
 
-                    foreach (var enemy in enemiesToRemove)
+                if (Application.Current.Dispatcher.CheckAccess())
+                {
+                    RemoveGameObjects(bulletsToRemove, enemiesToRemove);
+                }
+                else
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        enemies.Remove(enemy);
-                        view.GameCanvas.Children.Remove(enemy.Sprite);
-                        view.GameCanvas.Children.Remove(enemy.HealthBar);
-                        enemy.ClearEnemy();
-                    }
-                });
+                        RemoveGameObjects(bulletsToRemove, enemiesToRemove);
+                    });
+                }
 
                 await Task.Delay(50);
+            }
+        }
+
+        // NOUVELLE FONCTION : Vérifier collision joueur-ennemi avec mort des deux
+        private async Task CheckPlayerEnemyCollision(List<Enemy> enemiesToRemove)
+        {
+            if (player?.Sprite == null) return;
+
+            var currentEnemies = enemies.ToList();
+
+            foreach (var enemy in currentEnemies)
+            {
+                if (enemy?.Sprite == null || !enemies.Contains(enemy)) continue;
+
+                double enemyTop = Canvas.GetTop(enemy.Sprite);
+                double enemyLeft = Canvas.GetLeft(enemy.Sprite);
+                double playerTop = Canvas.GetTop(player.Sprite);
+                double playerLeft = Canvas.GetLeft(player.Sprite);
+
+                // Détection de collision
+                if (playerTop <= enemyTop + enemy.Sprite.Height &&
+                    playerTop + player.Sprite.Height >= enemyTop &&
+                    playerLeft + player.Sprite.Width >= enemyLeft &&
+                    playerLeft <= enemyLeft + enemy.Sprite.Width)
+                {
+                    // Collision détectée - les deux meurent
+                    if (!enemiesToRemove.Contains(enemy))
+                        enemiesToRemove.Add(enemy);
+
+                    // Tuer le joueur et arrêter le jeu
+                    if (player.health > 25)
+                    {
+                        player.UpdateHealthBar();
+                    }
+                    else
+                    {
+                        view.RemoveElementFromCanvas(player);
+                        return; // Sortir de la boucle car le joueur est mort
+                    }
+
+                }
+            }
+        }
+
+        // MÉTHODE CORRIGÉE : Suppression sécurisée des objets
+        private void RemoveGameObjects(List<Bullet> bulletsToRemove, List<Enemy> enemiesToRemove)
+        {
+            try
+            {
+                // Supprimer les balles de manière sécurisée
+                if (bulletsToRemove != null)
+                {
+                    foreach (var bullet in bulletsToRemove.ToList())
+                    {
+                        SafeRemoveBullet(bullet);
+                    }
+                }
+
+                // Supprimer les ennemis de manière sécurisée
+                if (enemiesToRemove != null)
+                {
+                    foreach (var enemy in enemiesToRemove.ToList())
+                    {
+                        SafeRemoveEnemy(enemy);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur dans RemoveGameObjects: {ex.Message}");
+            }
+        }
+
+        // NOUVELLE MÉTHODE : Suppression sécurisée d'une balle
+        private void SafeRemoveBullet(Bullet bullet)
+        {
+            try
+            {
+                if (bullet != null)
+                {
+                    if (bullets.Contains(bullet))
+                        bullets.Remove(bullet);
+
+                    if (bullet.Shape != null && view.GameCanvas.Children.Contains(bullet.Shape))
+                        view.GameCanvas.Children.Remove(bullet.Shape);
+
+                    bullet.ClearShape();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression de balle: {ex.Message}");
+            }
+        }
+
+        // NOUVELLE MÉTHODE : Suppression sécurisée d'un ennemi
+        private void SafeRemoveEnemy(Enemy enemy)
+        {
+            try
+            {
+                if (enemy != null)
+                {
+                    if (enemies.Contains(enemy))
+                        enemies.Remove(enemy);
+
+                    if (enemy.Sprite != null && view.GameCanvas.Children.Contains(enemy.Sprite))
+                        view.GameCanvas.Children.Remove(enemy.Sprite);
+
+                    if (enemy.healthBar?.Bar != null && view.GameCanvas.Children.Contains(enemy.healthBar.Bar))
+                        view.GameCanvas.Children.Remove(enemy.healthBar.Bar);
+
+                    enemy.ClearEnemy();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression d'ennemi: {ex.Message}");
             }
         }
 
@@ -208,6 +346,33 @@ namespace SpaceGame.Controller
         public void StopGame()
         {
             isGameRunning = false;
+        }
+
+        // NOUVELLE MÉTHODE : Redémarrer le jeu
+        public void RestartGame()
+        {
+            isGameRunning = false;
+
+            // Nettoyer tous les objets existants
+            bullets.Clear();
+            enemies.Clear();
+
+            // Nettoyer le canvas
+            var objectsToRemove = view.GameCanvas.Children.OfType<UIElement>().ToList();
+            foreach (var obj in objectsToRemove)
+            {
+                if (obj != player.Sprite && obj != player.healthBar.Bar)
+                {
+                    view.GameCanvas.Children.Remove(obj);
+                }
+            }
+
+            // Réinitialiser le joueur
+            player.ScoreEnemiesKilled = 0;
+            player.health = 100; // Assumant que la santé max est 100
+
+            // Redémarrer la détection de collision
+            StartCollisionDetection();
         }
     }
 }
