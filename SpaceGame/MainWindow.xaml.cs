@@ -25,7 +25,7 @@ namespace SpaceGame
                 height = GameCanvas.ActualHeight - 25;
 
                 // CORRECTION: Passer width et height au constructeur Player
-                player = new Player(@"C:\Users\salah\Desktop\SpaceGame\asserts\player.png", width, height);
+                player = new Player(@"asserts\player.png", width, height);
                 controller = new Controller.Controller(player, this);
 
                 // CORRECTION: Ajouter dans le bon ordre
@@ -44,7 +44,7 @@ namespace SpaceGame
             while (true)
             {
                 double enemyX = random.Next(50, (int)(width - 100));
-                controller.CreateEnemy(@"C:\Users\salah\Desktop\SpaceGame\asserts\E1.png", enemyX);
+                controller.CreateEnemy(@"asserts\E1.png", enemyX);
                 await Task.Delay(3000 / player.Level);
             }
         }

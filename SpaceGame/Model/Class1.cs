@@ -46,23 +46,25 @@ namespace SpaceGame.Classes
     {
         public Image Sprite { get; protected set; }
         public HealthBar healthBar { get; protected set; }
-        const int MaxHealth = 100; // CORRECTION: Constante pour la santé maximale
+        const int MaxHealth = 100;
         public int health { get; set; } = MaxHealth;
 
         protected GameObject(string imagePath, double x, double y, double width = 100, double height = 80)
         {
+            string fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, imagePath);
+
             Sprite = new Image
             {
                 Width = width,
                 Height = height,
-                Source = new BitmapImage(new Uri(imagePath, UriKind.Absolute))
+                Source = new BitmapImage(new Uri(fullPath, UriKind.Absolute))
             };
 
-            // CORRECTION: Positionner le sprite d'abord
+
             Canvas.SetLeft(Sprite, x);
             Canvas.SetTop(Sprite, y);
 
-            // CORRECTION: Créer la barre de vie à la bonne position
+
             healthBar = new HealthBar(x, y + height + 2, width, 10);
         }
 
@@ -85,7 +87,7 @@ namespace SpaceGame.Classes
                 case var h when h > 25:
                     healthBar.Bar.Fill = Brushes.Yellow;
                     break;
-                case var h when h > 0 :
+                case var h when h > 0:
                     healthBar.Bar.Fill = Brushes.Red;
                     break;
             }
@@ -98,9 +100,9 @@ namespace SpaceGame.Classes
         public int Level { get; set; } = 1;
         public bool OneShotModeActive { get; set; } = false;
 
-        // CORRECTION: Paramètres plus clairs
+
         public Player(string imagePath, double canvasWidth, double canvasHeight)
-            : base(imagePath, (canvasWidth - 100) / 2, canvasHeight - 100) // CORRECTION: Centré en bas
+            : base(imagePath, (canvasWidth - 100) / 2, canvasHeight - 100)
         {
         }
 
@@ -175,7 +177,7 @@ namespace SpaceGame.Classes
                 Height = 25,
                 Fill = Brushes.LightYellow
             };
-            Canvas.SetLeft(Shape, x + 47); // CORRECTION: Centrer sur le joueur
+            Canvas.SetLeft(Shape, x + 47);
             Canvas.SetTop(Shape, y - 20);
             Speed = 10;
         }
@@ -198,9 +200,6 @@ namespace SpaceGame.Classes
     }
 
 
-    // Ajout à la fin du fichier Classes.cs (dans le namespace SpaceGame.Classes)
-
-    // Classe mère Star
     public abstract class Star : GameObject
     {
         public bool IsCollected { get; protected set; } = false;
@@ -208,7 +207,7 @@ namespace SpaceGame.Classes
         protected Star(string imagePath, double x, double y)
             : base(imagePath, x, y, 40, 40)
         {
-            // Les étoiles n'ont pas de barre de vie
+
             if (healthBar != null)
             {
                 healthBar.Clear();
@@ -244,11 +243,11 @@ namespace SpaceGame.Classes
         }
     }
 
-    // Classe StarYellow - Augmente la santé à 100
+
     public class StarYellow : Star
     {
         public StarYellow(double x, double y)
-            : base(@"C:\Users\salah\Desktop\SpaceGameGithub\asserts\star2.png", x, y)
+            : base(@"asserts\star2.png", x, y)
         {
         }
 
@@ -264,9 +263,10 @@ namespace SpaceGame.Classes
     public class StarBlue : Star
     {
         public StarBlue(double x, double y)
-            : base(@"C:\Users\salah\Desktop\SpaceGameGithub\asserts\star1.png", x, y)
+            : base(@"asserts\star1.png", x, y)
         {
         }
+
         public override void ApplyEffect(Player player)
         {
             player.ApplyEffect(player);
