@@ -17,6 +17,7 @@ namespace SpaceGame.Classes
     {
         public Rectangle Bar { get; private set; }
         public Brush Color { get; set; } = Brushes.Green;
+        public Brush TmpColor { get; set; }
         public HealthBar(double x, double y, double width = 100, double height = 10)
         {
             Bar = new Rectangle
@@ -95,6 +96,7 @@ namespace SpaceGame.Classes
     {
         public int ScoreEnemiesKilled { get; set; } = 0;
         public int Level { get; set; } = 1;
+        public bool OneShotModeActive { get; set; } = false;
 
         // CORRECTION: Paramètres plus clairs
         public Player(string imagePath, double canvasWidth, double canvasHeight)
@@ -131,6 +133,19 @@ namespace SpaceGame.Classes
         public void IncrementLevel()
         {
             Level++;
+        }
+
+        public async void ApplyEffect(Player player)
+        {
+            OneShotModeActive = true;
+            await Task.Delay(10000);
+            OneShotModeActive = false;
+            player.healthBar.Bar.Fill = player.healthBar.TmpColor;
+        }
+
+        public bool IsOneShotModeActive()
+        {
+            return OneShotModeActive;
         }
     }
 
@@ -179,6 +194,84 @@ namespace SpaceGame.Classes
         public void ClearShape()
         {
             Shape = null;
+        }
+    }
+
+
+    // Ajout à la fin du fichier Classes.cs (dans le namespace SpaceGame.Classes)
+
+    // Classe mère Star
+    public abstract class Star : GameObject
+    {
+        public bool IsCollected { get; protected set; } = false;
+
+        protected Star(string imagePath, double x, double y)
+            : base(imagePath, x, y, 40, 40)
+        {
+            // Les étoiles n'ont pas de barre de vie
+            if (healthBar != null)
+            {
+                healthBar.Clear();
+                healthBar = null;
+            }
+        }
+
+        public abstract void ApplyEffect(Player player);
+
+        public virtual void Collect()
+        {
+            IsCollected = true;
+        }
+
+        public bool CheckCollisionWithPlayer(Player player)
+        {
+            if (IsCollected || player?.Sprite == null || Sprite == null) return false;
+
+            double starLeft = Canvas.GetLeft(Sprite);
+            double starTop = Canvas.GetTop(Sprite);
+            double playerLeft = Canvas.GetLeft(player.Sprite);
+            double playerTop = Canvas.GetTop(player.Sprite);
+
+            return starLeft < playerLeft + player.Sprite.Width &&
+                   starLeft + Sprite.Width > playerLeft &&
+                   starTop < playerTop + player.Sprite.Height &&
+                   starTop + Sprite.Height > playerTop;
+        }
+
+        public void ClearStar()
+        {
+            Clear();
+        }
+    }
+
+    // Classe StarYellow - Augmente la santé à 100
+    public class StarYellow : Star
+    {
+        public StarYellow(double x, double y)
+            : base(@"C:\Users\salah\Desktop\SpaceGameGithub\asserts\star2.png", x, y)
+        {
+        }
+
+        public override void ApplyEffect(Player player)
+        {
+            player.health = 100;
+            player.healthBar.Bar.Width = 100;
+            player.healthBar.Bar.Fill = System.Windows.Media.Brushes.Green;
+        }
+    }
+
+    // Classe StarBlue - Active le mode one-shot kill
+    public class StarBlue : Star
+    {
+        public StarBlue(double x, double y)
+            : base(@"C:\Users\salah\Desktop\SpaceGameGithub\asserts\star1.png", x, y)
+        {
+        }
+        public override void ApplyEffect(Player player)
+        {
+            player.ApplyEffect(player);
+            player.healthBar.TmpColor = player.healthBar.Bar.Fill;
+            player.healthBar.Bar.Fill = System.Windows.Media.Brushes.Blue;
         }
     }
 }

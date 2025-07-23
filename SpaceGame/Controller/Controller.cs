@@ -15,6 +15,7 @@ namespace SpaceGame.Controller
         private MainWindow view;
         private List<Enemy> enemies = new List<Enemy>();
         private List<Bullet> bullets = new List<Bullet>();
+        private List<Star> stars = new List<Star>();
         private bool isGameRunning = false;
 
         public Controller(Player player, MainWindow mainWindow)
@@ -135,9 +136,55 @@ namespace SpaceGame.Controller
             }
         }
 
+        public void CreateStar()
+        {
+            Random random = new Random();
+            double starX = random.Next(50, (int)(view.GameCanvas.ActualWidth - 90));
+            double starY = random.Next(50, (int)(view.GameCanvas.ActualHeight / 2));
+
+            Star star;
+            if (random.Next(0, 2) == 0)
+            {
+                star = new StarYellow(starX, starY);
+            }
+            else
+            {
+                star = new StarBlue(starX, starY);
+            }
+
+            stars.Add(star);
+            view.GameCanvas.Children.Add(star.Sprite);
+        }
+
+        private async void CreateStarsPeriodically()
+        {
+            Random random = new Random();
+            while (isGameRunning)
+            {
+                await Task.Delay(random.Next(10000, 20000)); // Étoile toutes les 10-20 secondes
+                if (isGameRunning && stars.Count < 2) // Maximum 2 étoiles à la fois
+                {
+                    CreateStar();
+                }
+            }
+        }
+
+        private bool IsOneShotModeActive()
+        {
+            foreach (var star in stars)
+            {
+                if (star is StarBlue starBlue && player.IsOneShotModeActive())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public void StartCollisionDetection()
         {
             CheckBulletEnemy();
+            CreateStarsPeriodically();
         }
 
         private async void CheckBulletEnemy()
@@ -148,9 +195,11 @@ namespace SpaceGame.Controller
             {
                 var bulletsToRemove = new List<Bullet>();
                 var enemiesToRemove = new List<Enemy>();
+                var starsToRemove = new List<Star>();
 
                 var currentBullets = bullets.ToList();
                 var currentEnemies = enemies.ToList();
+                var currentStars = stars.ToList();
 
                 foreach (Bullet bullet in currentBullets)
                 {
@@ -174,12 +223,8 @@ namespace SpaceGame.Controller
                         {
                             if (!bulletsToRemove.Contains(bullet))
                                 bulletsToRemove.Add(bullet);
-                            if (enemy.health > 25)
-                            {
-                                enemy.UpdateHealthBar();
-                                enemy.healthBar.UpdateHealthBarre(enemyLeft, enemyTop, enemy.Sprite.Height);
-                            }
-                            else
+
+                            if (player.IsOneShotModeActive() || enemy.health <= 25)
                             {
                                 if (!enemiesToRemove.Contains(enemy))
                                     enemiesToRemove.Add(enemy);
@@ -203,13 +248,32 @@ namespace SpaceGame.Controller
                                         if (player.ScoreEnemiesKilled % 5 == 0)
                                         {
                                             player.IncrementLevel();
-                                            
+
                                         }
                                         view.LevelTextBlock.Text = $"{player.Level}";
                                     });
                                 }
                             }
+                            else
+                            {
+                                enemy.UpdateHealthBar();
+                                enemy.healthBar.UpdateHealthBarre(enemyLeft, enemyTop, enemy.Sprite.Height);
+                            }
                         }
+                    }
+                }
+
+                // Collision joueur-étoile
+                foreach (Star star in currentStars)
+                {
+                    if (star?.Sprite == null || star.IsCollected || !stars.Contains(star)) continue;
+
+                    if (star.CheckCollisionWithPlayer(player))
+                    {
+                        star.ApplyEffect(player);
+                        star.Collect();
+                        if (!starsToRemove.Contains(star))
+                            starsToRemove.Add(star);
                     }
                 }
 
@@ -218,13 +282,13 @@ namespace SpaceGame.Controller
 
                 if (Application.Current.Dispatcher.CheckAccess())
                 {
-                    RemoveGameObjects(bulletsToRemove, enemiesToRemove);
+                    RemoveGameObjects(bulletsToRemove, enemiesToRemove, starsToRemove);
                 }
                 else
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        RemoveGameObjects(bulletsToRemove, enemiesToRemove);
+                        RemoveGameObjects(bulletsToRemove, enemiesToRemove, starsToRemove);
                     });
                 }
 
@@ -274,7 +338,7 @@ namespace SpaceGame.Controller
         }
 
         // MÉTHODE CORRIGÉE : Suppression sécurisée des objets
-        private void RemoveGameObjects(List<Bullet> bulletsToRemove, List<Enemy> enemiesToRemove)
+        private void RemoveGameObjects(List<Bullet> bulletsToRemove, List<Enemy> enemiesToRemove, List<Star> starsToRemove)
         {
             try
             {
@@ -293,6 +357,15 @@ namespace SpaceGame.Controller
                     foreach (var enemy in enemiesToRemove.ToList())
                     {
                         SafeRemoveEnemy(enemy);
+                    }
+                }
+
+                // Supprimer les étoiles de manière sécurisée
+                if (starsToRemove != null)
+                {
+                    foreach (var star in starsToRemove.ToList())
+                    {
+                        SafeRemoveStar(star);
                     }
                 }
             }
@@ -349,6 +422,28 @@ namespace SpaceGame.Controller
             }
         }
 
+        // NOUVELLE MÉTHODE : Suppression sécurisée d'une étoile
+        private void SafeRemoveStar(Star star)
+        {
+            try
+            {
+                if (star != null)
+                {
+                    if (stars.Contains(star))
+                        stars.Remove(star);
+
+                    if (star.Sprite != null && view.GameCanvas.Children.Contains(star.Sprite))
+                        view.GameCanvas.Children.Remove(star.Sprite);
+
+                    star.ClearStar();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression d'étoile: {ex.Message}");
+            }
+        }
+
         public int GetScore()
         {
             return player.ScoreEnemiesKilled;
@@ -367,6 +462,7 @@ namespace SpaceGame.Controller
             // Nettoyer tous les objets existants
             bullets.Clear();
             enemies.Clear();
+            stars.Clear();
 
             // Nettoyer le canvas
             var objectsToRemove = view.GameCanvas.Children.OfType<UIElement>().ToList();
