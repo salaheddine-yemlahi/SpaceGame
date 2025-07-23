@@ -3,19 +3,23 @@
   "WorkspaceRootPath": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|c:\\users\\salah\\desktop\\spacegamegithub\\spacegame\\controller\\controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|C:\\Users\\salah\\Desktop\\SpaceGameGithub\\spacegame\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|solutionrelative:spacegame\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|C:\\Users\\salah\\Desktop\\SpaceGameGithub\\spacegame\\controller\\controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|solutionrelative:spacegame\\controller\\controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|C:\\Users\\salah\\Desktop\\SpaceGameGithub\\spacegame\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|solutionrelative:spacegame\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|c:\\users\\salah\\desktop\\spacegamegithub\\spacegame\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|solutionrelative:spacegame\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|C:\\Users\\salah\\Desktop\\SpaceGameGithub\\spacegame\\model\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|solutionrelative:spacegame\\model\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|C:\\Users\\salah\\Desktop\\SpaceGameGithub\\spacegame\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|c:\\users\\salah\\desktop\\spacegamegithub\\spacegame\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7AF2BED4-D58F-4D5E-A878-F308B79495A2}|SpaceGame\\SpaceGame.csproj|solutionrelative:spacegame\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -26,17 +30,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "main.cs",
               "DocumentMoniker": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\main.cs",
               "RelativeDocumentMoniker": "SpaceGame\\main.cs",
               "ToolTip": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\main.cs",
               "RelativeToolTip": "SpaceGame\\main.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABUAAABXAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAA8AAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-20T13:16:41.254Z",
               "IsPinned": true,
@@ -44,39 +48,51 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "SpaceGame\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\MainWindow.xaml",
+              "RelativeToolTip": "SpaceGame\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-07-23T20:32:42.696Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Controller.cs",
               "DocumentMoniker": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\Controller\\Controller.cs",
               "RelativeDocumentMoniker": "SpaceGame\\Controller\\Controller.cs",
               "ToolTip": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\Controller\\Controller.cs",
               "RelativeToolTip": "SpaceGame\\Controller\\Controller.cs",
-              "ViewState": "AgIAAPEAAAAAAAAAAAAgwP8AAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAAHoAAAAAAAAAAAAIwIUAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-19T22:01:52.024Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Class1.cs",
               "DocumentMoniker": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\Model\\Class1.cs",
               "RelativeDocumentMoniker": "SpaceGame\\Model\\Class1.cs",
               "ToolTip": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\Model\\Class1.cs",
               "RelativeToolTip": "SpaceGame\\Model\\Class1.cs",
-              "ViewState": "AgIAAEoAAAAAAAAAAIA5wFYAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAFoAAAAAAAAAAAAAwGAAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-19T22:01:43.599Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "SpaceGame\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\salah\\Desktop\\SpaceGameGithub\\SpaceGame\\MainWindow.xaml.cs",
               "RelativeToolTip": "SpaceGame\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAAAEkAAAArAAAAAAAAAA==",
+              "ViewState": "AgIAACQAAAAAAAAAAAAwwDcAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-19T16:46:12.552Z",
               "EditorCaption": ""

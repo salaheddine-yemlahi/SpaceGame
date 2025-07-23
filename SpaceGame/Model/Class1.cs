@@ -94,6 +94,7 @@ namespace SpaceGame.Classes
     public class Player : GameObject
     {
         public int ScoreEnemiesKilled { get; set; } = 0;
+        public int Level { get; set; } = 1;
 
         // CORRECTION: Paramètres plus clairs
         public Player(string imagePath, double canvasWidth, double canvasHeight)
@@ -125,6 +126,11 @@ namespace SpaceGame.Classes
             Canvas.SetTop(Sprite, newTop);
 
             healthBar.UpdateHealthBarre(newLeft, newTop, Sprite.Height);
+        }
+
+        public void IncrementLevel()
+        {
+            Level++;
         }
     }
 

@@ -20,9 +20,12 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Enemies killed" FontSize="24" Foreground="Green" Margin="10" Grid.Row="0" TextAlignment="Center"/>
                 <TextBlock x:Name="scoreEnemiesKilled" Text="0" FontSize="24" Foreground="Green" Margin="10" Grid.Row="1" TextAlignment="Center"/>
+                <TextBlock Text="Level" FontSize="24" Foreground="Green" Margin="10" Grid.Row="2" TextAlignment="Center"/>
+                <TextBlock x:Name="LevelTextBlock" Text="1" FontSize="24" Foreground="Green" Margin="10" Grid.Row="3" TextAlignment="Center"/>
             </Grid>
         </Border>
     </Grid>

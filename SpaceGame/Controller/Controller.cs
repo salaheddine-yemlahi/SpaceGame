@@ -131,7 +131,7 @@ namespace SpaceGame.Controller
                     break;
                 }
 
-                await Task.Delay(100);
+                await Task.Delay(100 / player.Level);
             }
         }
 
@@ -166,7 +166,7 @@ namespace SpaceGame.Controller
                         double enemyTop = Canvas.GetTop(enemy.Sprite);
                         double enemyLeft = Canvas.GetLeft(enemy.Sprite);
 
-                        // Collision balle-ennemi
+                        // Collision balle-ennemi  
                         if (bulletTop <= enemyTop + enemy.Sprite.Height &&
                             bulletTop + bullet.Shape.Height >= enemyTop &&
                             bulletLeft + bullet.Shape.Width >= enemyLeft &&
@@ -189,12 +189,23 @@ namespace SpaceGame.Controller
                                 if (Application.Current.Dispatcher.CheckAccess())
                                 {
                                     view.scoreEnemiesKilled.Text = $"{player.ScoreEnemiesKilled}";
+                                    if (player.ScoreEnemiesKilled % 10 == 0)
+                                    {
+                                        player.IncrementLevel();
+                                        view.LevelTextBlock.Text = $"{player.Level}";
+                                    }
                                 }
                                 else
                                 {
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         view.scoreEnemiesKilled.Text = $"{player.ScoreEnemiesKilled}";
+                                        if (player.ScoreEnemiesKilled % 5 == 0)
+                                        {
+                                            player.IncrementLevel();
+                                            
+                                        }
+                                        view.LevelTextBlock.Text = $"{player.Level}";
                                     });
                                 }
                             }
@@ -202,7 +213,7 @@ namespace SpaceGame.Controller
                     }
                 }
 
-                // Vérifier collision joueur-ennemi (NOUVELLE FONCTION)
+                // Vérifier collision joueur-ennemi (NOUVELLE FONCTION)  
                 await CheckPlayerEnemyCollision(enemiesToRemove);
 
                 if (Application.Current.Dispatcher.CheckAccess())
@@ -217,7 +228,7 @@ namespace SpaceGame.Controller
                     });
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(50 / player.Level);
             }
         }
 

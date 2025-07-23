@@ -45,7 +45,7 @@ namespace SpaceGame
             {
                 double enemyX = random.Next(50, (int)(width - 100));
                 controller.CreateEnemy(@"C:\Users\salah\Desktop\SpaceGame\asserts\E1.png", enemyX);
-                await Task.Delay(4000);
+                await Task.Delay(3000 / player.Level);
             }
         }
 
@@ -75,6 +75,11 @@ namespace SpaceGame
         {
             GameCanvas.Children.Remove(player.Sprite);
             GameCanvas.Children.Remove(player.healthBar.Bar);
+        }
+
+        public void printLevel(int level)
+        {
+            LevelTextBlock.Text = $"{level}";
         }
     }
 }
