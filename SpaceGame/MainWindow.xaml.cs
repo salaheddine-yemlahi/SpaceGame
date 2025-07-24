@@ -24,11 +24,11 @@ namespace SpaceGame
                 width = GameCanvas.ActualWidth;
                 height = GameCanvas.ActualHeight - 25;
 
-                // CORRECTION: Passer width et height au constructeur Player
+
                 player = new Player(@"asserts\player.png", width, height);
                 controller = new Controller.Controller(player, this);
 
-                // CORRECTION: Ajouter dans le bon ordre
+
                 GameCanvas.Children.Add(player.Sprite);
                 GameCanvas.Children.Add(player.healthBar.Bar);
 
@@ -51,7 +51,7 @@ namespace SpaceGame
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            // CORRECTION: Utiliser switch pour plus de clarté
+
             switch (e.Key)
             {
                 case Key.Space:

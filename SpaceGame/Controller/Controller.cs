@@ -161,8 +161,8 @@ namespace SpaceGame.Controller
             Random random = new Random();
             while (isGameRunning)
             {
-                await Task.Delay(random.Next(10000, 20000)); // Étoile toutes les 10-20 secondes
-                if (isGameRunning && stars.Count < 2) // Maximum 2 étoiles à la fois
+                await Task.Delay(random.Next(10000, 20000));
+                if (isGameRunning && stars.Count < 2)
                 {
                     CreateStar();
                 }
@@ -215,7 +215,7 @@ namespace SpaceGame.Controller
                         double enemyTop = Canvas.GetTop(enemy.Sprite);
                         double enemyLeft = Canvas.GetLeft(enemy.Sprite);
 
-                        // Collision balle-ennemi  
+  
                         if (bulletTop <= enemyTop + enemy.Sprite.Height &&
                             bulletTop + bullet.Shape.Height >= enemyTop &&
                             bulletLeft + bullet.Shape.Width >= enemyLeft &&
@@ -263,7 +263,6 @@ namespace SpaceGame.Controller
                     }
                 }
 
-                // Collision joueur-étoile
                 foreach (Star star in currentStars)
                 {
                     if (star?.Sprite == null || star.IsCollected || !stars.Contains(star)) continue;
@@ -277,7 +276,6 @@ namespace SpaceGame.Controller
                     }
                 }
 
-                // Vérifier collision joueur-ennemi (NOUVELLE FONCTION)  
                 await CheckPlayerEnemyCollision(enemiesToRemove);
 
                 if (Application.Current.Dispatcher.CheckAccess())
@@ -296,7 +294,7 @@ namespace SpaceGame.Controller
             }
         }
 
-        // NOUVELLE FONCTION : Vérifier collision joueur-ennemi avec mort des deux
+
         private async Task CheckPlayerEnemyCollision(List<Enemy> enemiesToRemove)
         {
             if (player?.Sprite == null) return;
@@ -312,17 +310,17 @@ namespace SpaceGame.Controller
                 double playerTop = Canvas.GetTop(player.Sprite);
                 double playerLeft = Canvas.GetLeft(player.Sprite);
 
-                // Détection de collision
+
                 if (playerTop <= enemyTop + enemy.Sprite.Height &&
                     playerTop + player.Sprite.Height >= enemyTop &&
                     playerLeft + player.Sprite.Width >= enemyLeft &&
                     playerLeft <= enemyLeft + enemy.Sprite.Width)
                 {
-                    // Collision détectée - les deux meurent
+
                     if (!enemiesToRemove.Contains(enemy))
                         enemiesToRemove.Add(enemy);
 
-                    // Tuer le joueur et arrêter le jeu
+
                     if (player.health > 25)
                     {
                         player.UpdateHealthBar();
@@ -330,19 +328,18 @@ namespace SpaceGame.Controller
                     else
                     {
                         view.RemoveElementFromCanvas(player);
-                        return; // Sortir de la boucle car le joueur est mort
+                        return;
                     }
 
                 }
             }
         }
 
-        // MÉTHODE CORRIGÉE : Suppression sécurisée des objets
+
         private void RemoveGameObjects(List<Bullet> bulletsToRemove, List<Enemy> enemiesToRemove, List<Star> starsToRemove)
         {
             try
             {
-                // Supprimer les balles de manière sécurisée
                 if (bulletsToRemove != null)
                 {
                     foreach (var bullet in bulletsToRemove.ToList())
@@ -351,7 +348,6 @@ namespace SpaceGame.Controller
                     }
                 }
 
-                // Supprimer les ennemis de manière sécurisée
                 if (enemiesToRemove != null)
                 {
                     foreach (var enemy in enemiesToRemove.ToList())
@@ -360,7 +356,7 @@ namespace SpaceGame.Controller
                     }
                 }
 
-                // Supprimer les étoiles de manière sécurisée
+
                 if (starsToRemove != null)
                 {
                     foreach (var star in starsToRemove.ToList())
@@ -375,7 +371,7 @@ namespace SpaceGame.Controller
             }
         }
 
-        // NOUVELLE MÉTHODE : Suppression sécurisée d'une balle
+
         private void SafeRemoveBullet(Bullet bullet)
         {
             try
@@ -397,7 +393,7 @@ namespace SpaceGame.Controller
             }
         }
 
-        // NOUVELLE MÉTHODE : Suppression sécurisée d'un ennemi
+
         private void SafeRemoveEnemy(Enemy enemy)
         {
             try
@@ -422,7 +418,7 @@ namespace SpaceGame.Controller
             }
         }
 
-        // NOUVELLE MÉTHODE : Suppression sécurisée d'une étoile
+
         private void SafeRemoveStar(Star star)
         {
             try
@@ -454,17 +450,17 @@ namespace SpaceGame.Controller
             isGameRunning = false;
         }
 
-        // NOUVELLE MÉTHODE : Redémarrer le jeu
+
         public void RestartGame()
         {
             isGameRunning = false;
 
-            // Nettoyer tous les objets existants
+
             bullets.Clear();
             enemies.Clear();
             stars.Clear();
 
-            // Nettoyer le canvas
+
             var objectsToRemove = view.GameCanvas.Children.OfType<UIElement>().ToList();
             foreach (var obj in objectsToRemove)
             {
@@ -474,11 +470,10 @@ namespace SpaceGame.Controller
                 }
             }
 
-            // Réinitialiser le joueur
             player.ScoreEnemiesKilled = 0;
-            player.health = 100; // Assumant que la santé max est 100
+            player.health = 100;
 
-            // Redémarrer la détection de collision
+
             StartCollisionDetection();
         }
     }

@@ -118,11 +118,11 @@ namespace SpaceGame.Classes
             double newLeft = left + dx;
             double newTop = top + dy;
 
-            // Vérifier limites horizontales
+
             if (newLeft < 0) newLeft = 0;
             if (newLeft + Sprite.Width > maxWidth) newLeft = maxWidth - Sprite.Width;
 
-            // Vérifier limites verticales
+
             if (newTop < 0) newTop = 0;
             if (newTop + Sprite.Height > maxHeight) newTop = maxHeight - Sprite.Height;
 
@@ -259,7 +259,7 @@ namespace SpaceGame.Classes
         }
     }
 
-    // Classe StarBlue - Active le mode one-shot kill
+
     public class StarBlue : Star
     {
         public StarBlue(double x, double y)
